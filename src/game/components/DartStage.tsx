@@ -414,7 +414,7 @@ export function DartStage({
                     : 'bg-bull-panel2 text-bull-chalk'
             }`}
           >
-            <Avatar character={reaction.speaker} className="h-9 w-9 text-xs" />
+            <Avatar character={reaction.speaker} className="h-10 w-10 text-xs ring-2 ring-black/30" />
             <span>
               <span className="font-black">{reaction.speaker.name.split(' ')[0]}:</span> {reaction.text}
             </span>
