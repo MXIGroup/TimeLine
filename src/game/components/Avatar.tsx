@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Character } from '../types';
+import { asset } from '../lib/asset';
 
 interface AvatarProps {
   character: Character;
@@ -24,7 +25,7 @@ export function Avatar({ character, className = '', ring = false }: AvatarProps)
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src={character.image}
+        src={asset(character.image)}
         alt={character.name}
         onError={() => setFailed(true)}
         className={`${base} object-cover`}

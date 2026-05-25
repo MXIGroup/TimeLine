@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { asset } from '../lib/asset';
 
 /**
  * Shows the official Bullhitters logo from /public if present, otherwise falls
@@ -14,7 +15,7 @@ export function Logo({ className = '' }: { className?: string }) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src="/bullhitters-logo.png"
+        src={asset('/bullhitters-logo.png')}
         alt="Bullhitters Darts Bonanza"
         onError={() => setFailed(true)}
         className={`mx-auto h-auto w-[80%] max-w-[320px] drop-shadow-[0_4px_0_rgba(0,0,0,0.5)] ${className}`}
