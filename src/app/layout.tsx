@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: 'Bullhitters Darts Bonanza',
   description: 'Swipe-to-throw darts chaos with the Bullhitters. One more go.',
   applicationName: 'Bullhitters Darts Bonanza',
+  appleWebApp: {
+    capable: true,
+    title: 'Bullhitters',
+    statusBarStyle: 'black',
+  },
 };
 
 export const viewport: Viewport = {
@@ -12,6 +17,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: 'cover',
   themeColor: '#0a0c0a',
 };
 

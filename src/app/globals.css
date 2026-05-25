@@ -24,6 +24,7 @@ body {
 @layer components {
   .phone-frame {
     @apply relative mx-auto flex h-[100dvh] w-full max-w-[480px] flex-col overflow-hidden bg-bull-black;
+    padding-bottom: env(safe-area-inset-bottom);
   }
   .screen {
     @apply flex h-full w-full flex-col;
