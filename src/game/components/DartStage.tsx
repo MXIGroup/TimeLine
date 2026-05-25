@@ -17,6 +17,7 @@ import {
 import type { Character, ChaosModifier, ThrowResult } from '../types';
 import type { ReactionTier } from '../data/reactions';
 import { pickReaction } from '../data/reactions';
+import { CHARACTERS } from '../data/characters';
 
 export interface ResolveInfo {
   special: Character['id'] | null;
@@ -106,7 +107,7 @@ export function DartStage({
 
   // Ephemeral feedback.
   const [pops, setPops] = useState<FloatPop[]>([]);
-  const [reaction, setReaction] = useState<{ text: string; tier: ReactionTier } | null>(null);
+  const [reaction, setReaction] = useState<{ text: string; tier: ReactionTier; speaker: Character } | null>(null);
   const [shake, setShake] = useState(false);
   const [bigBanner, setBigBanner] = useState<string | null>(null);
   const popId = useRef(0);
@@ -278,7 +279,10 @@ export function DartStage({
     setPops((prev) => [...prev.slice(-3), { id, text: label, color, big }]);
     setTimeout(() => setPops((prev) => prev.filter((p) => p.id !== id)), 1000);
 
-    setReaction({ text: pickReaction(resolved.tier), tier: resolved.tier });
+    // A rival member (not the one you're playing) delivers the banter.
+    const rivals = CHARACTERS.filter((c) => c.id !== character.id);
+    const speaker = rivals[Math.floor(Math.random() * rivals.length)];
+    setReaction({ text: pickReaction(resolved.tier), tier: resolved.tier, speaker });
     setTimeout(() => setReaction(null), 2200);
 
     sfxThud();
@@ -410,8 +414,10 @@ export function DartStage({
                     : 'bg-bull-panel2 text-bull-chalk'
             }`}
           >
-            <Avatar character={character} className="h-9 w-9 text-xs" />
-            <span>{reaction.text}</span>
+            <Avatar character={reaction.speaker} className="h-9 w-9 text-xs" />
+            <span>
+              <span className="font-black">{reaction.speaker.name.split(' ')[0]}:</span> {reaction.text}
+            </span>
           </div>
         </div>
       )}
