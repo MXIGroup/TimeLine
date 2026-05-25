@@ -4,6 +4,7 @@ import { useGame } from '../GameProvider';
 import { getCharacter } from '../data/characters';
 import type { ScreenId } from '../types';
 import { MuteButton } from '../components/MuteButton';
+import { Logo } from '../components/Logo';
 
 interface HomeScreenProps {
   go: (screen: ScreenId) => void;
@@ -23,13 +24,7 @@ export function HomeScreen({ go }: HomeScreenProps) {
 
       {/* Logo */}
       <div className="flex flex-1 flex-col items-center justify-center text-center">
-        <div className="text-6xl">🎯</div>
-        <h1 className="heading mt-2 text-4xl leading-none text-shadow-hard">
-          <span className="text-bull-green">BULLHITTERS</span>
-          <br />
-          <span className="text-bull-red">DARTS</span>{' '}
-          <span className="text-bull-chalk">BONANZA</span>
-        </h1>
+        <Logo />
         <p className="mt-3 text-xs uppercase tracking-[0.3em] text-bull-mute">
           Swipe. Throw. Cause chaos.
         </p>

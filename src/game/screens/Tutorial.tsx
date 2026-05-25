@@ -8,9 +8,9 @@ interface TutorialProps {
 }
 
 const STEPS = [
-  { icon: '👆', title: 'Drag up to throw', text: 'Press anywhere, drag up toward the board and release. Direction aims, distance sets power.' },
-  { icon: '🎯', title: 'Mind the spread', text: 'The green ring is where your dart might land. Steadier hands = tighter ring. Trebles and bulls score big.' },
-  { icon: '⚡', title: 'Use your Special', text: 'Each Bullhitter has a one-per-round special. Tap it before a big dart for an edge.' },
+  { icon: '👆', title: '1. Drag to aim', text: 'Press anywhere and drag up to move the target onto the spot you want. Release to lock your aim.' },
+  { icon: '🎚️', title: '2. Time the accuracy bar', text: 'A marker sweeps left↔right along the bar. Tap to stop it as close to the centre as you can — dead centre lands on target, off-centre and the dart drifts.' },
+  { icon: '⚡', title: 'Use your Special', text: 'Each Bullhitter has a one-per-round special. e.g. DC’s Ice Cold slows the bar; Dan’s Clutch tightens it.' },
   { icon: '🌀', title: 'Survive the Chaos', text: 'The Chaos Wheel changes the rules mid-run. Roll with it — that’s the Bullhitters way.' },
 ];
 
