@@ -1,30 +1,25 @@
 import './globals.css';
-import type { Metadata } from 'next';
-import Link from 'next/link';
+import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
-  title: 'MXI Campaign Tracker',
-  description: 'Campaign tracking and client reporting for MXI Group.',
+  title: 'Bullhitters Darts Bonanza',
+  description: 'Swipe-to-throw darts chaos with the Bullhitters. One more go.',
+  applicationName: 'Bullhitters Darts Bonanza',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#0a0c0a',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <header className="border-b border-gray-200 bg-white">
-          <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-            <Link href="/" className="font-semibold text-lg tracking-tight">
-              MXI <span className="text-mxi-accent">Campaign Tracker</span>
-            </Link>
-            <nav className="flex gap-6 text-sm text-gray-700">
-              <Link href="/" className="hover:text-mxi-ink">Posts</Link>
-              <Link href="/campaigns" className="hover:text-mxi-ink">Campaigns</Link>
-              <Link href="/clients" className="hover:text-mxi-ink">Clients</Link>
-              <Link href="/posts/new" className="hover:text-mxi-ink font-medium text-mxi-accent">+ New Post</Link>
-            </nav>
-          </div>
-        </header>
-        <main className="max-w-7xl mx-auto px-6 py-8">{children}</main>
+      <body className="bg-bull-black text-bull-chalk antialiased select-none overscroll-none">
+        {children}
       </body>
     </html>
   );

@@ -1,52 +1,53 @@
-# MXI Campaign Tracking & Reporting
+# Bullhitters Darts Bonanza
 
-Campaign tracking and client reporting platform for MXI Group. Paste in a post
-URL, tag it with creator/campaign/client info, and the system pulls metrics,
-schedules refreshes at 24h / 48h / 7d / custom intervals, syncs to a Google
-Sheet, and (roadmap) generates client-ready PDF/deck reports.
+A mobile-first, swipe-to-throw darts game built around the four Bullhitters.
+Fast, funny, replayable — play a round in under a minute, then go again.
+
+> This branch (`claude/bullhitters-darts-game-*`) is dedicated to the game.
+> The MXI Campaign Tracker lives on its own branch.
 
 ## Quick start
 
 ```bash
-# 1. Install
 npm install
-
-# 2. Copy env template and fill it in (see docs/SETUP.md for which keys you need first)
-cp .env.example .env.local
-
-# 3. Provision Supabase
-#    - Create a project at https://supabase.com
-#    - Run supabase/migrations/00001_initial_schema.sql in the SQL editor
-#    - (optional) Run supabase/seed.sql to load Zilch/BoyleSports/EA/etc client templates
-
-# 4. Run
-npm run dev
+npm run dev      # http://localhost:3000 — open on a phone or a narrow window
 ```
 
-## Repo layout
-
-```
-src/app                 Next.js App Router pages + API routes
-src/lib/platforms       Platform detection + per-platform metric providers
-src/lib/clients         Client-specific templates (Zilch, BoyleSports, etc.)
-src/lib/sheets          Google Sheets sync
-src/lib/snapshots       Snapshot scheduling logic
-supabase/migrations     Postgres schema (one migration per change)
-workers/python          Optional FastAPI scraping fallback (see docs/SCRAPERS.md)
-docs                    Architecture, setup, API integration notes, roadmap
+```bash
+npm run build    # production build
+npm run typecheck
 ```
 
-## Docs
+No backend, no accounts, no database. All progress (coins, unlocks, best
+scores, selected character) is saved to `localStorage`.
 
-- `docs/ARCHITECTURE.md` — recommended MVP architecture and why
-- `docs/SETUP.md` — full environment setup, OAuth flows, service accounts
-- `docs/PLATFORMS.md` — what's automatable per platform, what needs creator auth, what falls back to manual
-- `docs/ROADMAP.md` — PDF/deck reports, demographics, CPM/CPV, screenshot evidence
-- `docs/CLIENT_TEMPLATES.md` — client-specific reporting config
+## How to play
 
-## Status
+- **Drag up to throw.** Press anywhere, drag up toward the board, release.
+  Direction aims, distance sets power, and the green ring shows your spread.
+- **Play Gauntlet** — the flagship mode: 5 escalating rounds, Chaos Wheel
+  twists, rival banter, and a boss finale. Fail an objective and the run ends.
+- **Quick Challenge** — 30-second bursts: Treble Hunt, Bullseye Blitz, 180 Chase.
+- **Characters** — Ollie, Bailey, Dan and DC each play differently (aim,
+  risk multiplier, and a one-per-round special move).
+- **Rewards** — spend coins on dart skins, board skins, celebrations and
+  reaction lines. No pay-to-win.
 
-MVP scaffold. URL input → tagging → DB storage → Google Sheet push works.
-Platform providers ship as stubs with manual-entry fallback; YouTube has a
-working API implementation as a reference. See `docs/PLATFORMS.md` for the
-matrix of what's wired up vs. stubbed vs. requires creator OAuth.
+## Tech
+
+Next.js (App Router) · React · TypeScript · Tailwind CSS. The game is a single
+client-rendered route. Sound effects are synthesised with the Web Audio API,
+so there are no audio assets to ship.
+
+## Layout
+
+```
+src/app                 Next.js entry (root layout + page mounting the game)
+src/game                The whole game
+  data/                 Characters, reactions/banter, chaos modifiers, rewards, challenges
+  lib/                  Dartboard geometry + scoring, localStorage, Web Audio SFX
+  components/           Dartboard SVG, DartStage (throw mechanic), Chaos Wheel, results
+  screens/              Home, Character Select, Gauntlet, Quick Challenge, Rewards, Tutorial
+  GameProvider.tsx      Persisted state (coins, unlocks, best scores, equipped)
+  Game.tsx              Screen router
+```

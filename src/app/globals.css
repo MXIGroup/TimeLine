@@ -3,24 +3,84 @@
 @tailwind utilities;
 
 :root {
-  --background: #fafafa;
-  --foreground: #0b0b0c;
+  --background: #0a0c0a;
+  --foreground: #eef2ee;
+}
+
+html,
+body {
+  height: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-.card { @apply bg-white rounded-xl border border-gray-200 shadow-sm; }
-.btn  { @apply inline-flex items-center px-4 py-2 rounded-lg font-medium transition-colors; }
-.btn-primary { @apply btn bg-mxi-ink text-white hover:bg-gray-800; }
-.btn-secondary { @apply btn border border-gray-300 text-gray-800 hover:bg-gray-50; }
-.input { @apply w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mxi-accent/40; }
-.label { @apply block text-sm font-medium text-gray-700 mb-1; }
-.tag   { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium; }
-.tag-live        { @apply tag bg-green-100 text-green-800; }
-.tag-in-progress { @apply tag bg-yellow-100 text-yellow-800; }
-.tag-requested   { @apply tag bg-gray-100 text-gray-700; }
-.tag-archived    { @apply tag bg-gray-50 text-gray-500; }
+/* Lock the whole experience to a portrait phone frame, centred on larger screens. */
+@layer components {
+  .phone-frame {
+    @apply relative mx-auto flex h-[100dvh] w-full max-w-[480px] flex-col overflow-hidden bg-bull-black;
+  }
+  .screen {
+    @apply flex h-full w-full flex-col;
+  }
+  .heading {
+    @apply font-display uppercase tracking-tight;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center rounded-2xl px-5 py-4 text-base font-extrabold uppercase tracking-wide transition-transform active:scale-95 disabled:opacity-40 disabled:active:scale-100;
+  }
+  .btn-green {
+    @apply btn bg-bull-green text-bull-black shadow-glowGreen;
+  }
+  .btn-red {
+    @apply btn bg-bull-red text-white shadow-glowRed;
+  }
+  .btn-ghost {
+    @apply btn border-2 border-bull-panel2 bg-bull-panel text-bull-chalk;
+  }
+  .btn-gold {
+    @apply btn bg-bull-gold text-bull-black shadow-glowGold;
+  }
+  .panel {
+    @apply rounded-2xl border border-white/5 bg-bull-panel;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide;
+  }
+}
+
+/* Subtle scanline / felt texture for the dark backdrop. */
+.felt-bg {
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(34, 227, 107, 0.08), transparent 60%),
+    radial-gradient(120% 80% at 50% 110%, rgba(255, 45, 75, 0.08), transparent 60%),
+    #0a0c0a;
+}
+
+.stripe-bg {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.02) 0px,
+    rgba(255, 255, 255, 0.02) 2px,
+    transparent 2px,
+    transparent 9px
+  );
+}
+
+.text-shadow-hard {
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* Hide scrollbars inside the phone frame but keep scrollability. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
