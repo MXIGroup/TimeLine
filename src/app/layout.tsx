@@ -10,6 +10,16 @@ export const metadata: Metadata = {
     title: 'Bullhitters',
     statusBarStyle: 'black',
   },
+  openGraph: {
+    title: 'Bullhitters Darts Bonanza',
+    description: 'Swipe-to-throw darts chaos with the Bullhitters. One more go.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Bullhitters Darts Bonanza',
+    description: 'Swipe-to-throw darts chaos with the Bullhitters. One more go.',
+  },
 };
 
 export const viewport: Viewport = {
