@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { dartboardArt } from '@/game/lib/iconArt';
 
+export const dynamic = 'force-static';
 export const size = { width: 180, height: 180 };
 export const contentType = 'image/png';
 
