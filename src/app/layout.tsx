@@ -2,6 +2,9 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
+  metadataBase: process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`)
+    : undefined,
   title: 'Bullhitters Darts Bonanza',
   description: 'Swipe-to-throw darts chaos with the Bullhitters. One more go.',
   applicationName: 'Bullhitters Darts Bonanza',
