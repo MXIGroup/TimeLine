@@ -93,7 +93,6 @@ export function DartStage({
   const [pendingSpecial, setPendingSpecial] = useState<Character['id'] | null>(null);
 
   const [mode, setMode] = useState<Mode>('idle');
-  const startRef = useRef<{ x: number; y: number } | null>(null);
   const [reticle, setReticle] = useState<{ x: number; y: number; spread: number } | null>(null);
 
   // Accuracy-bar state.
@@ -143,24 +142,25 @@ export function DartStage({
     return () => cancelAnimationFrame(raf);
   }, [mode]);
 
-  // Board layout in surface pixels.
-  const boardSvg = Math.min(size.w * 0.94, size.h * 0.52) * boardScale;
-  const boardTop = size.h * 0.04;
-  const boardCenter = { x: size.w / 2, y: boardTop + boardSvg / 2 };
+  // Board layout: centred on screen, pro-board style.
+  const hudH = size.h * 0.085;
+  const controlsH = size.h * 0.2;
+  const avail = size.h - hudH - controlsH;
+  const boardSvg = Math.min(size.w * 0.9, avail * 0.98) * boardScale;
+  const boardCenter = { x: size.w / 2, y: hudH + avail / 2 };
+  const boardTop = boardCenter.y - boardSvg / 2;
   const radiusPx = scoringRadiusPx(boardSvg);
-  const anchor = { x: size.w / 2, y: size.h - size.h * 0.085 };
-  const gain = Math.max(1.4, (anchor.y - boardCenter.y) / (size.h * 0.3));
+  // The crosshair sits this far above the fingertip so the target isn't hidden.
+  const lift = size.h * 0.11;
 
   const canThrow = !disabled && dartsRemaining > 0;
 
   function screenToNorm(clientX: number, clientY: number) {
-    const start = startRef.current!;
-    const dragX = clientX - start.x;
-    const dragY = clientY - start.y;
-    const rx = anchor.x + dragX * gain;
-    const ry = anchor.y + dragY * gain;
-    let nx = (rx - boardCenter.x) / radiusPx;
-    let ny = (ry - boardCenter.y) / radiusPx;
+    const rect = surfaceRef.current!.getBoundingClientRect();
+    const localX = clientX - rect.left;
+    const localY = clientY - rect.top - lift;
+    let nx = (localX - boardCenter.x) / radiusPx;
+    let ny = (localY - boardCenter.y) / radiusPx;
     const amp = pendingSpecial === 'dc' ? 0 : wobbleAmp;
     if (amp) {
       const ph = performance.now() / 120;
@@ -169,7 +169,7 @@ export function DartStage({
     }
     nx = Math.max(-1.35, Math.min(1.35, nx));
     ny = Math.max(-1.35, Math.min(1.35, ny));
-    return { nx, ny, dragY };
+    return { nx, ny };
   }
 
   /** Difficulty of the accuracy bar for this dart. */
@@ -200,9 +200,9 @@ export function DartStage({
   function startAiming(e: React.PointerEvent) {
     unlockAudio();
     (e.target as Element).setPointerCapture?.(e.pointerId);
-    startRef.current = { x: e.clientX, y: e.clientY };
     setMode('aiming');
-    setReticle({ x: 0, y: 0.35, spread: 0.5 / character.aimFactor });
+    const { nx, ny } = screenToNorm(e.clientX, e.clientY);
+    setReticle({ x: nx, y: ny, spread: 0.5 / character.aimFactor });
   }
 
   function enterAccuracy(nx: number, ny: number) {
@@ -250,23 +250,15 @@ export function DartStage({
   }
 
   function onPointerMove(e: React.PointerEvent) {
-    if (mode !== 'aiming' || !startRef.current) return;
+    if (mode !== 'aiming') return;
     const { nx, ny } = screenToNorm(e.clientX, e.clientY);
     setReticle({ x: nx, y: ny, spread: 0.5 / character.aimFactor });
     if (Math.random() < 0.12) sfxAim();
   }
 
   function onPointerUp(e: React.PointerEvent) {
-    if (mode !== 'aiming' || !startRef.current) return;
-    const { nx, ny, dragY } = screenToNorm(e.clientX, e.clientY);
-    const minUp = size.h * 0.04;
-    startRef.current = null;
-    // Require a deliberate upward swipe to lock the aim; otherwise cancel.
-    if (dragY > -minUp) {
-      setReticle(null);
-      setMode('idle');
-      return;
-    }
+    if (mode !== 'aiming') return;
+    const { nx, ny } = screenToNorm(e.clientX, e.clientY);
     enterAccuracy(nx, ny);
   }
 
@@ -321,7 +313,7 @@ export function DartStage({
       : mode === 'aiming'
         ? 'Release to lock your aim'
         : canThrow
-          ? 'Drag up to aim'
+          ? 'Touch & drag to aim'
           : '—';
 
   return (
@@ -336,15 +328,46 @@ export function DartStage({
       {/* HUD */}
       {hud && <div className="pointer-events-none absolute inset-x-0 top-0 z-20 p-3">{hud}</div>}
 
-      {/* Board */}
-      <div className="absolute left-1/2 -translate-x-1/2" style={{ top: boardTop }}>
-        <Dartboard
-          size={boardSvg}
-          boardColor={boardColor}
-          dartColor={dartColor}
-          darts={landed}
-          reticle={reticle}
-        />
+      {/* Stage LED strips down the edges */}
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 z-0 w-1.5"
+        style={{ background: 'linear-gradient(180deg,#22e36b,#ff2d4b)', opacity: 0.22 }}
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 z-0 w-1.5"
+        style={{ background: 'linear-gradient(180deg,#ff2d4b,#22e36b)', opacity: 0.22 }}
+      />
+
+      {/* Spotlight behind the board */}
+      <div
+        className="pointer-events-none absolute z-0 rounded-full"
+        style={{
+          left: boardCenter.x - boardSvg * 0.85,
+          top: boardCenter.y - boardSvg * 0.85,
+          width: boardSvg * 1.7,
+          height: boardSvg * 1.7,
+          background:
+            'radial-gradient(circle, rgba(255,255,255,0.10) 0%, rgba(34,227,107,0.06) 35%, transparent 68%)',
+        }}
+      />
+
+      {/* Centred board in a pro cabinet ring */}
+      <div className="absolute z-10" style={{ left: boardCenter.x - boardSvg / 2, top: boardTop }}>
+        <div
+          className="rounded-full"
+          style={{
+            boxShadow:
+              '0 0 0 7px #14181c, 0 0 0 10px #0a0c0a, 0 0 0 12px rgba(34,227,107,0.35), 0 12px 40px rgba(0,0,0,0.6), 0 0 50px rgba(34,227,107,0.15)',
+          }}
+        >
+          <Dartboard
+            size={boardSvg}
+            boardColor={boardColor}
+            dartColor={dartColor}
+            darts={landed}
+            reticle={reticle}
+          />
+        </div>
       </div>
 
       {/* Floating score pops */}
