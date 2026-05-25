@@ -21,6 +21,8 @@ export interface Character {
   color: string;
   /** Initials shown on the avatar placeholder. */
   initials: string;
+  /** Optional photo path (falls back to initials if missing). */
+  image?: string;
   /** >1 tightens the throw spread (more accurate). */
   aimFactor: number;
   /** Score multiplier applied to risky targets (trebles, bull). */

@@ -10,6 +10,7 @@ import type { ReactionTier } from '../data/reactions';
 import { DartStage, type ResolveInfo, type ResolvedThrow } from '../components/DartStage';
 import { ChaosWheel } from '../components/ChaosWheel';
 import { ResultsCard } from '../components/ResultsCard';
+import { Avatar } from '../components/Avatar';
 import { rewardColor } from '../data/rewards';
 
 interface GauntletModeProps {
@@ -188,12 +189,7 @@ export function GauntletMode({ go }: GauntletModeProps) {
           )}
           {round.boss && (
             <div className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-bull-panel2 px-3 py-2 text-sm">
-              <span
-                className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-black text-bull-black"
-                style={{ background: getCharacter(round.boss.rival).color }}
-              >
-                {getCharacter(round.boss.rival).initials}
-              </span>
+              <Avatar character={getCharacter(round.boss.rival)} className="h-8 w-8 text-xs" />
               <span className="font-bold">
                 {getCharacter(round.boss.rival).name.split(' ')[0]} set {round.boss.target}. Beat it.
               </span>

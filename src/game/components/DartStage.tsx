@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Dartboard } from './Dartboard';
+import { Avatar } from './Avatar';
 import { resultLabel, scoringRadiusPx, scorePoint } from '../lib/board';
 import {
   sfxAim,
@@ -397,9 +398,9 @@ export function DartStage({
 
       {/* Reaction card */}
       {reaction && (
-        <div className="pointer-events-none absolute inset-x-0 z-30 flex justify-center" style={{ top: boardTop + boardSvg + 8 }}>
+        <div className="pointer-events-none absolute inset-x-0 z-30 flex justify-center px-3" style={{ top: boardTop + boardSvg + 8 }}>
           <div
-            className={`animate-slideInRight max-w-[88%] rounded-xl px-4 py-2 text-center text-sm font-bold text-shadow-hard ${
+            className={`animate-slideInRight flex max-w-[92%] items-center gap-2 rounded-xl py-2 pl-2 pr-3 text-left text-sm font-bold text-shadow-hard ${
               reaction.tier === 'huge'
                 ? 'bg-bull-gold/90 text-bull-black'
                 : reaction.tier === 'good'
@@ -409,7 +410,8 @@ export function DartStage({
                     : 'bg-bull-panel2 text-bull-chalk'
             }`}
           >
-            {reaction.text}
+            <Avatar character={character} className="h-9 w-9 text-xs" />
+            <span>{reaction.text}</span>
           </div>
         </div>
       )}

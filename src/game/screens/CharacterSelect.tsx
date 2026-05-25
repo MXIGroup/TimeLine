@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useGame } from '../GameProvider';
 import { CHARACTERS } from '../data/characters';
 import type { CharacterId, ScreenId } from '../types';
+import { Avatar } from '../components/Avatar';
 
 interface CharacterSelectProps {
   go: (screen: ScreenId) => void;
@@ -37,12 +38,7 @@ export function CharacterSelect({ go }: CharacterSelectProps) {
               }`}
               style={selected ? { borderColor: c.color } : undefined}
             >
-              <span
-                className="flex h-12 w-12 items-center justify-center rounded-full text-base font-black text-bull-black"
-                style={{ background: c.color }}
-              >
-                {c.initials}
-              </span>
+              <Avatar character={c} className="h-12 w-12 text-base" />
               <span className="mt-1 text-[10px] font-bold leading-tight">{c.name.split(' ')[0]}</span>
             </button>
           );
@@ -52,12 +48,7 @@ export function CharacterSelect({ go }: CharacterSelectProps) {
       {/* Detail card */}
       <div className="panel mt-4 flex-1 overflow-y-auto p-5 no-scrollbar">
         <div className="flex items-center gap-3">
-          <span
-            className="flex h-16 w-16 items-center justify-center rounded-2xl text-2xl font-black text-bull-black"
-            style={{ background: active.color }}
-          >
-            {active.initials}
-          </span>
+          <Avatar character={active} className="h-16 w-16 text-2xl" ring />
           <div>
             <h3 className="heading text-2xl" style={{ color: active.color }}>
               {active.name}

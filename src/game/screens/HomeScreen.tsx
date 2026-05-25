@@ -5,6 +5,7 @@ import { getCharacter } from '../data/characters';
 import type { ScreenId } from '../types';
 import { MuteButton } from '../components/MuteButton';
 import { Logo } from '../components/Logo';
+import { Avatar } from '../components/Avatar';
 
 interface HomeScreenProps {
   go: (screen: ScreenId) => void;
@@ -33,12 +34,7 @@ export function HomeScreen({ go }: HomeScreenProps) {
           onClick={() => go('characters')}
           className="mt-5 flex items-center gap-3 rounded-full border border-white/10 bg-bull-panel px-4 py-2"
         >
-          <span
-            className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-black text-bull-black"
-            style={{ background: character.color }}
-          >
-            {character.initials}
-          </span>
+          <Avatar character={character} className="h-9 w-9 text-sm" />
           <span className="text-left">
             <span className="block text-sm font-bold">{character.name}</span>
             <span className="block text-[10px] uppercase tracking-wide text-bull-mute">
