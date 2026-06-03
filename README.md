@@ -1,52 +1,120 @@
-# MXI Campaign Tracking & Reporting
+# Rossi Food 🥗
 
-Campaign tracking and client reporting platform for MXI Group. Paste in a post
-URL, tag it with creator/campaign/client info, and the system pulls metrics,
-schedules refreshes at 24h / 48h / 7d / custom intervals, syncs to a Google
-Sheet, and (roadmap) generates client-ready PDF/deck reports.
+**Your week. Deliciously sorted.**
 
-## Quick start
+Rossi Food is a UK-focused, mobile-first weekly **dinner planning** web app. Answer a
+few quick questions — your supermarket, weekly budget, meal vibes, dietary needs and
+kitchen equipment — and Rossi Food generates a full Monday–Friday dinner plan that
+stays under budget, complete with a combined shopping list and full recipe pages.
+
+> Dinner planning without the faff.
+
+---
+
+## ✨ Features
+
+- **Guided onboarding** — shop → budget → vibe → dietary → kitchen, with a smooth
+  progress bar and sticky bottom CTAs.
+- **Smart meal plan generator** — filters 79 realistic UK recipes by diet and
+  equipment, scores them against your chosen vibes, adjusts prices for your shop, and
+  builds a varied 5-dinner week that fits your budget.
+- **Combined shopping list** — ingredients merged across recipes, grouped by aisle,
+  tickable, with native share / clipboard fallback.
+- **Recipe detail pages** — cost, time, servings, macros, ingredients, method,
+  required equipment, allergens and dietary tags.
+- **Regenerate** any time for a fresh combination.
+- **LocalStorage persistence** — refresh and your plan is still there. No login, no
+  database, no backend.
+
+## 🧱 Tech stack
+
+- [Next.js 15](https://nextjs.org/) (App Router) + React 19
+- TypeScript
+- Tailwind CSS
+- A tiny dependency-free store built on `useSyncExternalStore` + `localStorage`
+
+## 🚀 Getting started
 
 ```bash
-# 1. Install
+# 1. Install dependencies
 npm install
 
-# 2. Copy env template and fill it in (see docs/SETUP.md for which keys you need first)
-cp .env.example .env.local
-
-# 3. Provision Supabase
-#    - Create a project at https://supabase.com
-#    - Run supabase/migrations/00001_initial_schema.sql in the SQL editor
-#    - (optional) Run supabase/seed.sql to load Zilch/BoyleSports/EA/etc client templates
-
-# 4. Run
+# 2. Run the dev server
 npm run dev
+# open http://localhost:3000
+
+# 3. Production build
+npm run build && npm start
+
+# Type-check only
+npm run typecheck
 ```
 
-## Repo layout
+No environment variables are required.
+
+## 🗺️ Routes
+
+| Route                  | Screen                                  |
+| ---------------------- | --------------------------------------- |
+| `/`                    | Landing                                 |
+| `/onboarding/shop`     | Choose your shop                        |
+| `/onboarding/budget`   | Weekly dinner budget                    |
+| `/onboarding/vibe`     | Meal vibes (up to 3)                    |
+| `/onboarding/dietary`  | Dietary needs                           |
+| `/onboarding/kitchen`  | Kitchen equipment                       |
+| `/loading`             | "Leave it with us…" generating screen   |
+| `/plan`                | Weekly dinner plan + cost summary       |
+| `/shopping-list`       | Combined, tickable shopping list        |
+| `/recipe/[id]`         | Full recipe detail                      |
+
+## 📁 Project structure
 
 ```
-src/app                 Next.js App Router pages + API routes
-src/lib/platforms       Platform detection + per-platform metric providers
-src/lib/clients         Client-specific templates (Zilch, BoyleSports, etc.)
-src/lib/sheets          Google Sheets sync
-src/lib/snapshots       Snapshot scheduling logic
-supabase/migrations     Postgres schema (one migration per change)
-workers/python          Optional FastAPI scraping fallback (see docs/SCRAPERS.md)
-docs                    Architecture, setup, API integration notes, roadmap
+src/
+├── app/                # Next.js App Router routes
+├── components/         # Reusable UI (AppShell, MealCard, ShoppingList, …)
+├── data/
+│   ├── recipes.ts      # 79 recipes (costs derived from ingredients + shop multipliers)
+│   ├── shops.ts        # Supermarkets, colours and static price multipliers
+│   └── options.ts      # Vibes, dietary needs, equipment, constants
+├── lib/
+│   ├── generateMealPlan.ts  # The meal plan algorithm
+│   ├── shoppingList.ts      # Ingredient aggregation + grouping + sharing
+│   └── format.ts            # Currency / time helpers
+├── store/
+│   └── useAppStore.ts  # Dependency-free persisted state store
+└── types/              # Shared TypeScript types
 ```
 
-## Docs
+## 🧮 How the meal plan generator works
 
-- `docs/ARCHITECTURE.md` — recommended MVP architecture and why
-- `docs/SETUP.md` — full environment setup, OAuth flows, service accounts
-- `docs/PLATFORMS.md` — what's automatable per platform, what needs creator auth, what falls back to manual
-- `docs/ROADMAP.md` — PDF/deck reports, demographics, CPM/CPV, screenshot evidence
-- `docs/CLIENT_TEMPLATES.md` — client-specific reporting config
+`generateMealPlan(preferences)` in `src/lib/generateMealPlan.ts`:
 
-## Status
+1. **Filter** recipes by dietary needs (e.g. vegan recipes are valid for veggie users).
+2. **Filter** by available equipment, relaxing the rule with a friendly warning if too
+   few recipes match.
+3. **Score** each recipe by how many chosen vibes it matches, with a gentle nudge
+   toward cheaper meals.
+4. **Adjust** every recipe's cost using the selected shop's price multiplier.
+5. **Build** hundreds of random 5-meal combinations, preferring distinct main
+   ingredients for variety.
+6. **Pick** the highest-scoring combination that fits the budget — or, if nothing fits,
+   the cheapest best-matching set plus a clear over-budget warning. If a full week
+   genuinely can't be built, a friendly error suggests loosening filters.
 
-MVP scaffold. URL input → tagging → DB storage → Google Sheet push works.
-Platform providers ship as stubs with manual-entry fallback; YouTube has a
-working API implementation as a reference. See `docs/PLATFORMS.md` for the
-matrix of what's wired up vs. stubbed vs. requires creator OAuth.
+## 💷 Pricing data
+
+Supermarket prices in this MVP are **static, illustrative UK estimates**. Each recipe's
+cost is derived from its ingredient costs, then scaled per shop by a price multiplier in
+`src/data/shops.ts`.
+
+> 🔌 **Integration point:** to use live pricing, replace `priceMultiplier` /
+> `buildCostByShop` in `src/data/shops.ts` (and the per-ingredient costs) with calls to a
+> real supermarket price API. The data flow downstream (meal plan + shopping list totals)
+> already reads from these values, so no UI changes are needed.
+
+## 📝 MVP limitations
+
+- Static estimated prices — no live supermarket APIs yet.
+- No authentication, no payments, no database.
+- Recipe images are represented by emoji/gradient placeholders.

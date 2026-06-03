@@ -1,83 +1,70 @@
+'use client';
+
 import Link from 'next/link';
-import { supabaseServer } from '@/lib/supabase';
+import { AppShell } from '@/components/AppShell';
+import { PrimaryButton } from '@/components/PrimaryButton';
+import { TagBadge } from '@/components/TagBadge';
+import { useAppState, useHydrated } from '@/store/useAppStore';
 
-export const dynamic = 'force-dynamic';
-
-export default async function HomePage() {
-  const db = await supabaseServer();
-  const { data: rows } = await db
-    .from('v_posts_for_sheet')
-    .select('*')
-    .order('post_date', { ascending: false })
-    .limit(100);
+export default function LandingPage() {
+  const hydrated = useHydrated();
+  const { plan } = useAppState();
+  const hasPlan = hydrated && plan && plan.recipeIds.length > 0;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-end justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Posts</h1>
-          <p className="text-gray-600 text-sm">Latest snapshot per post. Click through to see history.</p>
+    <AppShell
+      footer={
+        <div className="space-y-2">
+          <Link href="/onboarding/shop" className="block">
+            <PrimaryButton>Get started</PrimaryButton>
+          </Link>
+          {hasPlan && (
+            <Link href="/plan" className="block">
+              <PrimaryButton variant="secondary">View this week’s plan</PrimaryButton>
+            </Link>
+          )}
         </div>
-        <Link href="/posts/new" className="btn-primary">+ Add Post</Link>
-      </div>
+      }
+    >
+      <div className="flex flex-col items-center pt-4 text-center">
+        {/* Hero example meal card */}
+        <div className="w-full overflow-hidden rounded-4xl border border-gray-100 bg-white shadow-lg animate-pop-in">
+          <div className="flex h-40 items-center justify-center bg-gradient-to-br from-rossi-yellow to-rossi-orange">
+            <span className="text-7xl drop-shadow">🍗</span>
+          </div>
+          <div className="p-4 text-left">
+            <div className="flex items-center justify-between">
+              <span className="rounded-full bg-rossi-ink px-2.5 py-1 text-xs font-extrabold text-white">
+                Tonight
+              </span>
+              <span className="text-sm font-extrabold text-lime-600">£4.80</span>
+            </div>
+            <h3 className="mt-2 text-lg font-extrabold text-rossi-ink">
+              Creamy Peri-Peri Chicken Rice Bowls
+            </h3>
+            <div className="mt-1 text-sm font-semibold text-gray-400">⏱ 30 min · 🍽 2 servings</div>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              <TagBadge label="High Protein" />
+              <TagBadge label="Fakeaway" />
+            </div>
+          </div>
+        </div>
 
-      <div className="card overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="text-left text-gray-500 border-b border-gray-200">
-            <tr>
-              <th className="px-4 py-2">Creator</th>
-              <th className="px-4 py-2">Client</th>
-              <th className="px-4 py-2">Campaign</th>
-              <th className="px-4 py-2">Platform</th>
-              <th className="px-4 py-2">Posted</th>
-              <th className="px-4 py-2 text-right">Views</th>
-              <th className="px-4 py-2 text-right">ER %</th>
-              <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Last refresh</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(rows ?? []).map((r) => (
-              <tr key={r.post_id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="px-4 py-2">{r.creator}</td>
-                <td className="px-4 py-2">{r.client}</td>
-                <td className="px-4 py-2">{r.campaign}</td>
-                <td className="px-4 py-2">{r.platform}</td>
-                <td className="px-4 py-2 whitespace-nowrap">{formatDate(r.post_date)}</td>
-                <td className="px-4 py-2 text-right">{fmtNumber(r.views)}</td>
-                <td className="px-4 py-2 text-right">{r.engagement_rate ?? '—'}</td>
-                <td className="px-4 py-2"><StatusTag status={r.status} /></td>
-                <td className="px-4 py-2 text-gray-500 whitespace-nowrap">{r.snapshot_date ? formatDate(r.snapshot_date) : 'never'}</td>
-              </tr>
-            ))}
-            {!rows?.length && (
-              <tr>
-                <td colSpan={9} className="px-4 py-10 text-center text-gray-500">
-                  No posts yet. <Link href="/posts/new" className="text-mxi-accent">Add your first one.</Link>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        <h1 className="mt-8 text-4xl font-extrabold leading-tight text-rossi-ink">
+          Your week.
+          <br />
+          <span className="text-lime-500">Deliciously sorted.</span>
+        </h1>
+        <p className="mt-3 px-2 text-gray-500">
+          Tell us your budget, tastes and kitchen. We’ll create a plan for dinners this week.
+        </p>
+
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-1.5">
+          <TagBadge label="UK supermarkets" color="bg-lime-100 text-lime-700" emoji="🛒" />
+          <TagBadge label="5 dinners" color="bg-rossi-blue text-blue-900" emoji="📅" />
+          <TagBadge label="Shopping list" color="bg-rossi-yellow text-yellow-900" emoji="🧾" />
+        </div>
       </div>
-    </div>
+    </AppShell>
   );
-}
-
-function fmtNumber(n: number | null | undefined) {
-  if (n == null) return '—';
-  return new Intl.NumberFormat().format(n);
-}
-function formatDate(s: string) {
-  return new Date(s).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-function StatusTag({ status }: { status: string }) {
-  const map: Record<string, [string, string]> = {
-    live:         ['🟢 Live',        'tag-live'],
-    in_progress:  ['🟡 In Progress', 'tag-in-progress'],
-    requested:    ['⏳ Requested',    'tag-requested'],
-    archived:     ['Archived',       'tag-archived'],
-  };
-  const [label, cls] = map[status] ?? [status, 'tag-requested'];
-  return <span className={cls}>{label}</span>;
 }

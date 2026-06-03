@@ -11,3 +11,4 @@ coverage
 .python-cache
 __pycache__
 workers/python/.venv
+tsconfig.tsbuildinfo
